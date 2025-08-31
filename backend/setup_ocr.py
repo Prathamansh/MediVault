@@ -261,7 +261,7 @@ def verify_api_key():
         if ai_service_path.exists():
             with open(ai_service_path, "r") as f:
                 content = f.read()
-                if "AIzaSyB-b0jwOrGIzWUbRkWxw_o4gAWFE5clkX4" in content:
+                if "API-KEY-GEMINI" in content:
                     print("⚠️  Using default API key from ai_service.py")
                     print("   For production use, it's recommended to use your own API key")
                     return True
@@ -386,4 +386,5 @@ def main():
     start_server()
 
 if __name__ == "__main__":
+
     main() 
