@@ -35,7 +35,7 @@ def summarize_medical_text(text, api_key=None, use_fake_data_on_error=True, max_
         api_key = os.environ.get('GEMINI_API_KEY')
         if not api_key:
             logger.warning("GEMINI_API_KEY environment variable not set, using fallback key")
-            api_key = "AIzaSyB-b0jwOrGIzWUbRkWxw_o4gAWFE5clkX4"  # Fallback key that may not work
+            api_key = "API_KEY_GEMINI"  # Fallback key that may not work
     
     result = {
         "summary": "",
@@ -272,4 +272,5 @@ def generate_fallback_summary(text, lines):
     # Add a disclaimer
     summary_parts.append("*Note: This is a rule-based summary generated when AI services were unavailable.*")
     
+
     return "\n\n".join(summary_parts) 
