@@ -1,0 +1,49 @@
+NORTHSIDE MEDICAL CENTER
+123 Health Avenue, Metropolis, XY 10001
+Tel: (555) 123-4567 | Fax: (555) 987-6543
+
+PRESCRIPTION
+
+Date: April 17, 2023
+Patient Name: John Smith
+DOB: 06/12/1985
+Patient ID: MED78901234
+
+DIAGNOSIS:
+- Hypertension (Essential), Uncontrolled (ICD-10: I10)
+- Type 2 Diabetes Mellitus (ICD-10: E11.9)
+- Hyperlipidemia (ICD-10: E78.5)
+
+MEDICATIONS:
+1. Lisinopril 20mg
+   Take 1 tablet by mouth once daily
+   Dispense: 30 tablets
+   Refill: 3 times
+
+2. Metformin 500mg
+   Take 1 tablet by mouth twice daily with meals
+   Dispense: 60 tablets
+   Refill: 3 times
+
+3. Atorvastatin 40mg
+   Take 1 tablet by mouth at bedtime
+   Dispense: 30 tablets
+   Refill: 3 times
+
+LABS:
+- HbA1c: 7.8% (Target: <7.0%)
+- Blood Pressure: 142/90 mmHg (Target: <130/80 mmHg)
+- LDL: 118 mg/dL (Target: <100 mg/dL)
+
+FOLLOW-UP:
+Please return to clinic in 3 months for medication review and lab work.
+Schedule appointment for blood pressure check in 4 weeks.
+
+NOTES:
+Patient advised on diet and exercise. Recommended 30 minutes of moderate exercise at least 5 days per week. Advised to follow diabetic diet and reduce sodium intake.
+
+Dr. Sarah Johnson, MD
+License #: MD123456
+NPI: 1234567890
+
+Electronically signed: 04/17/2023 

@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-secondary-light text-gray-800;
+  font-family: 'Inter', 'Segoe UI', 'Roboto', sans-serif;
+}
+
+.page-container {
+  @apply min-h-screen flex flex-col;
+}
+
+.main-content {
+  @apply flex-1 p-0;
+}
+
+.card {
+  @apply bg-white rounded-xl shadow-card p-6 mb-6;
+}
+
+.btn {
+  @apply px-4 py-2 rounded-lg text-white font-medium transition-colors duration-200;
+}
+
+.btn-primary {
+  @apply bg-primary hover:bg-primary-dark;
+}
+
+.btn-emergency {
+  @apply bg-emergency hover:bg-red-700;
+}
+
+.emergency-btn {
+  @apply fixed bottom-6 right-6 bg-emergency hover:bg-red-700 text-white w-16 h-16 rounded-full flex items-center justify-center shadow-lg z-50 transition-transform hover:scale-110;
+}
+
+.form-input {
+  @apply w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary;
+}
+
+.form-label {
+  @apply block text-sm font-medium text-gray-700 mb-1;
+}
+
+.navbar {
+  @apply bg-white shadow-md py-4 px-6 flex justify-between items-center;
+}
+
+.hero-section {
+  @apply bg-gradient-to-r from-primary to-primary-dark text-white py-20 px-6;
+}
+
+.feature-card {
+  @apply bg-white p-6 rounded-xl shadow-card hover:shadow-xl transition-shadow duration-300;
+}
+
+.emergency-panel {
+  @apply fixed inset-0 bg-white z-50 overflow-auto p-6;
+}
+
+.emergency-panel-header {
+  @apply flex justify-between items-center border-b pb-4 mb-6;
+}
+
+.sidebar {
+  @apply bg-white w-20 md:w-64 shadow-lg min-h-screen;
+}
+
+.sidebar-link {
+  @apply flex items-center p-4 text-gray-700 hover:bg-primary-light hover:text-white rounded-lg mx-2 my-1 transition-colors duration-200;
+}
+
+.sidebar-link.active {
+  @apply bg-primary text-white;
+} 

@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MediVault - Your Medical Repository</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+    
+    body {
+      background: linear-gradient(135deg, #f0f7ff 0%, #e6f0fb 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    
+    .login-container {
+      width: 100%;
+      max-width: 1000px;
+      display: flex;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+    
+    .login-image {
+      flex: 1;
+      background: url('https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80') center/cover;
+      display: none;
+    }
+    
+    .login-box {
+      flex: 1;
+      background-color: white;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    h1 {
+      color: #0078D7;
+      font-size: 2rem;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+    
+    .subtitle {
+      color: #6B7280;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .form-container {
+      flex: 1;
+    }
+    
+    .form {
+      padding: 10px 0;
+    }
+    
+    .form h2 {
+      color: #1F2937;
+      margin-bottom: 20px;
+      font-size: 1.5rem;
+      text-align: center;
+    }
+    
+    .input-group {
+      margin-bottom: 15px;
+    }
+    
+    .input-group input,
+    .input-group select {
+      width: 100%;
+      padding: 12px 15px;
+      border: 1px solid #D1D5DB;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: border-color 0.2s;
+    }
+    
+    .input-group input:focus,
+    .input-group select:focus {
+      outline: none;
+      border-color: #0078D7;
+      box-shadow: 0 0 0 3px rgba(0, 120, 215, 0.15);
+    }
+    
+    .btn-primary {
+      width: 100%;
+      background-color: #0078D7;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      margin-top: 10px;
+    }
+    
+    .btn-primary:hover {
+      background-color: #005A9E;
+    }
+    
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    
+    .btn-secondary {
+      flex: 1;
+      background-color: #EFF6FF;
+      color: #0078D7;
+      border: 1px solid #DBEAFE;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    
+    .btn-secondary:hover {
+      background-color: #DBEAFE;
+    }
+    
+    .btn-emergency {
+      flex: 1;
+      background-color: #FEE2E2;
+      color: #DC2626;
+      border: 1px solid #FECACA;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    
+    .btn-emergency:hover {
+      background-color: #FECACA;
+    }
+    
+    .hidden {
+      display: none;
+    }
+    
+    @media (min-width: 768px) {
+      .login-image {
+        display: block;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-image"></div>
+    <div class="login-box">
+      <h1>MediVault</h1>
+      <p class="subtitle">Your Secure Medical Information Repository</p>
+      
+      <div class="form-container">
+        <form id="loginForm" class="form">
+          <h2>Login</h2>
+          <div class="input-group">
+            <input type="email" id="email" placeholder="Email Address" required>
+          </div>
+          <div class="input-group">
+            <input type="password" id="password" placeholder="Password" required>
+          </div>
+          <button type="submit" class="btn-primary">Sign In</button>
+        </form>
+
+        <form id="registerForm" class="form hidden">
+          <h2>Create Account</h2>
+          <div class="input-group">
+            <input type="text" id="firstName" placeholder="First Name" required>
+          </div>
+          <div class="input-group">
+            <input type="text" id="lastName" placeholder="Last Name" required>
+          </div>
+          <div class="input-group">
+            <input type="email" id="regEmail" placeholder="Email Address" required>
+          </div>
+          <div class="input-group">
+            <input type="password" id="regPassword" placeholder="Password" required>
+          </div>
+          <div class="input-group">
+            <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
+          </div>
+          <button type="submit" class="btn-primary">Register</button>
+        </form>
+      </div>
+
+      <div class="action-buttons">
+        <button id="showRegister" class="btn-secondary">
+          <i class="fas fa-user-plus"></i> Create Account
+        </button>
+        <button id="showLogin" class="btn-secondary hidden">
+          <i class="fas fa-arrow-left"></i> Back to Login
+        </button>
+        <a href="frontend/public/emergency.html" class="btn-emergency">
+          <i class="fas fa-ambulance"></i> Emergency Access
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const loginForm = document.getElementById('loginForm');
+      const registerForm = document.getElementById('registerForm');
+      const showRegisterBtn = document.getElementById('showRegister');
+      const showLoginBtn = document.getElementById('showLogin');
+      
+      // Switch between login and register forms
+      showRegisterBtn.addEventListener('click', function() {
+        loginForm.classList.add('hidden');
+        registerForm.classList.remove('hidden');
+        showRegisterBtn.classList.add('hidden');
+        showLoginBtn.classList.remove('hidden');
+      });
+      
+      showLoginBtn.addEventListener('click', function() {
+        registerForm.classList.add('hidden');
+        loginForm.classList.remove('hidden');
+        showLoginBtn.classList.add('hidden');
+        showRegisterBtn.classList.remove('hidden');
+      });
+      
+      // Handle login form submission
+      loginForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        
+        // Check if user exists
+        const existingUsers = JSON.parse(localStorage.getItem('medivault_users') || '[]');
+        const user = existingUsers.find(user => user.email === email && user.password === password);
+        
+        if (user) {
+          // Set current user
+          localStorage.setItem('medivault_user_data', JSON.stringify(user));
+          localStorage.setItem('medivault_logged_in', 'true');
+          
+          // Redirect to dashboard
+          window.location.href = 'frontend/public/index.html';
+        } else {
+          alert('Invalid email or password');
+        }
+      });
+      
+      // Handle register form submission
+      registerForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const firstName = document.getElementById('firstName').value;
+        const lastName = document.getElementById('lastName').value;
+        const email = document.getElementById('regEmail').value;
+        const password = document.getElementById('regPassword').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+        
+        // Validate passwords match
+        if (password !== confirmPassword) {
+          alert('Passwords do not match');
+          return;
+        }
+        
+        // Check if user already exists
+        const existingUsers = JSON.parse(localStorage.getItem('medivault_users') || '[]');
+        if (existingUsers.some(user => user.email === email)) {
+          alert('Email already in use');
+          return;
+        }
+        
+        // Create user object
+        const newUser = {
+          firstName,
+          lastName,
+          email,
+          password
+        };
+        
+        // Save user data
+        existingUsers.push(newUser);
+        localStorage.setItem('medivault_users', JSON.stringify(existingUsers));
+        
+        // Set as current user
+        localStorage.setItem('medivault_user_data', JSON.stringify(newUser));
+        localStorage.setItem('medivault_logged_in', 'true');
+        
+        // Redirect to dashboard
+        window.location.href = 'frontend/public/index.html';
+      });
+    });
+  </script>
+</body>
+</html> 

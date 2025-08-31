@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OCR Document Uploader - MediVault</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Inter', 'Segoe UI', 'Roboto', sans-serif;
+      background-color: #f3f4f6;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    .card {
+      background-color: white;
+      border-radius: 0.75rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .btn-primary {
+      background-color: #0078D7;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.2s;
+    }
+    .btn-primary:hover {
+      background-color: #005A9E;
+    }
+    .btn-primary:disabled {
+      background-color: #9CA3AF;
+      cursor: not-allowed;
+    }
+    .file-drop-area {
+      border: 2px dashed #D1D5DB;
+      border-radius: 0.5rem;
+      padding: 2rem;
+      text-align: center;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+    .file-drop-area:hover, .file-drop-area.dragover {
+      border-color: #0078D7;
+      background-color: #F0F9FF;
+    }
+    .hidden {
+      display: none;
+    }
+    .spinner {
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      from {
+        transform: rotate(0deg);
+      }
+      to {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="text-center mb-8">
+      <h1 class="text-3xl font-bold text-gray-800 mb-2">Medical Document OCR</h1>
+      <p class="text-gray-600">Upload any medical document to extract and analyze text</p>
+      <a href="index.html" class="inline-block mt-2 text-blue-600 hover:text-blue-800">
+        <i class="fas fa-arrow-left mr-1"></i> Back to Dashboard
+      </a>
+    </header>
+
+    <div class="card">
+      <div id="file-drop-area" class="file-drop-area mb-6">
+        <input type="file" id="file-input" class="hidden" accept=".pdf,.jpg,.jpeg,.png">
+        <div class="text-gray-400 mb-4">
+          <i class="fas fa-file-medical fa-4x"></i>
+        </div>
+        <p class="text-gray-700 text-lg font-medium mb-2">Drop your medical document here</p>
+        <p class="text-gray-500 mb-4">or</p>
+        <button class="btn-primary" onclick="document.getElementById('file-input').click()">
+          <i class="fas fa-upload mr-2"></i> Choose File
+        </button>
+        <p class="text-sm text-gray-500 mt-4">Supports PDF, JPG, PNG files (max 16MB)</p>
+      </div>
+      
+      <div id="selected-file" class="hidden bg-gray-100 rounded-lg p-3 mb-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center">
+            <i class="fas fa-file-medical text-blue-600 mr-2"></i>
+            <span id="file-name" class="text-gray-800 font-medium"></span>
+          </div>
+          <button id="remove-file" class="text-gray-500 hover:text-red-500 p-1">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      </div>
+      
+      <div class="text-center">
+        <button id="process-btn" class="btn-primary w-full py-3 text-lg" disabled>
+          <i class="fas fa-wand-magic-sparkles mr-2"></i> Process Document with OCR
+        </button>
+      </div>
+    </div>
+    
+    <!-- Loading State -->
+    <div id="loading" class="card hidden">
+      <div class="text-center py-8">
+        <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
+        <h3 class="text-xl font-medium text-gray-800 mb-2">Processing Document</h3>
+        <p class="text-gray-600">Please wait while we extract and analyze text from your document...</p>
+      </div>
+    </div>
+    
+    <!-- Results Area -->
+    <div id="results" class="hidden">
+      <div class="card mb-4">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-semibold text-gray-800">AI Summary</h2>
+          <span id="result-timestamp" class="text-sm text-gray-500"></span>
+        </div>
+        <div id="summary-content" class="prose max-w-none"></div>
+        
+        <!-- QR Code Generator Button -->
+        <div class="mt-6 border-t pt-4">
+          <button id="generate-qr-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h4a1 1 0 010 2H5v4a1 1 0 01-2 0V4zm10-1a1 1 0 011 1v4a1 1 0 01-2 0V5h-3a1 1 0 110-2h4zM4 14a1 1 0 011-1h3a1 1 0 110 2H6v3a1 1 0 11-2 0v-4zm11-1a1 1 0 00-1 1v4a1 1 0 002 0v-3h3a1 1 0 000-2h-4z" clip-rule="evenodd" />
+            </svg>
+            Generate Shareable QR Code
+          </button>
+        </div>
+      </div>
+      
+      <div id="qr-code-container" class="card mb-4 hidden">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-semibold text-gray-800">Shareable QR Code</h2>
+          <button id="close-qr-btn" class="text-gray-500 hover:text-gray-700">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+          </button>
+        </div>
+        <div class="flex flex-col items-center">
+          <div id="qr-code" class="mb-4 p-4 bg-white rounded-lg border border-gray-200"></div>
+          <p class="text-sm text-gray-600 mb-4">Scan this QR code to view patient's medical information</p>
+          <button id="download-qr-btn" class="btn-primary flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+            Download QR Code
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Error State -->
+    <div id="error-state" class="card hidden">
+      <div class="bg-red-50 border-l-4 border-red-500 p-4">
+        <div class="flex">
+          <div class="flex-shrink-0">
+            <i class="fas fa-exclamation-circle text-red-500"></i>
+          </div>
+          <div class="ml-3">
+            <h3 class="text-lg font-medium text-red-800">Processing Error</h3>
+            <div class="mt-2 text-sm text-red-700">
+              <p id="error-message">There was an error processing your document.</p>
+            </div>
+            <div class="mt-4">
+              <button id="try-again-btn" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md">
+                Try Again
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const fileDropArea = document.getElementById('file-drop-area');
+      const fileInput = document.getElementById('file-input');
+      const selectedFileEl = document.getElementById('selected-file');
+      const fileNameEl = document.getElementById('file-name');
+      const removeFileBtn = document.getElementById('remove-file');
+      const processBtn = document.getElementById('process-btn');
+      const loadingEl = document.getElementById('loading');
+      const resultsEl = document.getElementById('results');
+      const errorStateEl = document.getElementById('error-state');
+      const errorMessageEl = document.getElementById('error-message');
+      const tryAgainBtn = document.getElementById('try-again-btn');
+      const summaryContentEl = document.getElementById('summary-content');
+      const resultTimestampEl = document.getElementById('result-timestamp');
+      
+      // QR Code elements
+      const generateQrBtn = document.getElementById('generate-qr-btn');
+      const qrCodeContainer = document.getElementById('qr-code-container');
+      const qrCodeElement = document.getElementById('qr-code');
+      const downloadQrBtn = document.getElementById('download-qr-btn');
+      const closeQrBtn = document.getElementById('close-qr-btn');
+      
+      let selectedFile = null;
+      
+      // Load QR code library
+      const loadQRCodeLibrary = function() {
+        return new Promise((resolve, reject) => {
+          // Check if QRCode is already loaded
+          if (window.QRCode) {
+            resolve();
+            return;
+          }
+          
+          const script = document.createElement('script');
+          script.src = 'https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js';
+          script.onload = resolve;
+          script.onerror = reject;
+          document.head.appendChild(script);
+        });
+      };
+      
+      // Load QR Code library immediately
+      loadQRCodeLibrary().then(() => {
+        console.log('QR Code library loaded successfully');
+      }).catch(err => {
+        console.error('Failed to load QR Code library:', err);
+      });
+      
+      // Check if we have a record passed from the medical records section
+      checkForPreloadedRecord();
+      
+      // File drag & drop handling
+      fileDropArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        fileDropArea.classList.add('dragover');
+      });
+      
+      fileDropArea.addEventListener('dragleave', () => {
+        fileDropArea.classList.remove('dragover');
+      });
+      
+      fileDropArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        fileDropArea.classList.remove('dragover');
+        
+        if (e.dataTransfer.files.length) {
+          handleFileSelect(e.dataTransfer.files[0]);
+        }
+      });
+      
+      // File input change
+      fileInput.addEventListener('change', () => {
+        if (fileInput.files.length) {
+          handleFileSelect(fileInput.files[0]);
+        }
+      });
+      
+      // Click on drop area
+      fileDropArea.addEventListener('click', () => {
+        fileInput.click();
+      });
+      
+      // Handle file selection
+      function handleFileSelect(file) {
+        const validTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
+        
+        if (!validTypes.includes(file.type)) {
+          showError('Please select a PDF or image file (JPG, PNG)');
+          return;
+        }
+        
+        if (file.size > 16 * 1024 * 1024) { // 16MB limit
+          showError('File is too large. Maximum size is 16MB.');
+          return;
+        }
+        
+        selectedFile = file;
+        fileNameEl.textContent = file.name;
+        selectedFileEl.classList.remove('hidden');
+        processBtn.disabled = false;
+      }
+      
+      // Remove file
+      removeFileBtn.addEventListener('click', () => {
+        selectedFile = null;
+        fileInput.value = '';
+        selectedFileEl.classList.add('hidden');
+        processBtn.disabled = true;
+      });
+      
+      // Process document button
+      processBtn.addEventListener('click', async () => {
+        if (!selectedFile) return;
+        
+        // Show loading state
+        fileDropArea.classList.add('hidden');
+        selectedFileEl.classList.add('hidden');
+        processBtn.disabled = true;
+        resultsEl.classList.add('hidden');
+        errorStateEl.classList.add('hidden');
+        loadingEl.classList.remove('hidden');
+        
+        // Simulate processing time for realism
+        setTimeout(() => {
+          // Hide loading state
+          loadingEl.classList.add('hidden');
+          
+          // Show results
+          resultsEl.classList.remove('hidden');
+          fileDropArea.classList.add('hidden');
+          
+          // Hardcoded JSON data
+          const hardcodedData = {
+            "patientData": {
+              "ABHA_NO": "219172500007703",
+              "ABHA_ADDRESS": "sharmadiksha0201@abdm",
+              "CR_No": "0102015",
+              "patientName": "Diksha Sharma",
+              "ageSex": "21 Yr/F",
+              "sampleTypeNo": "Serum/0102015",
+              "wardOPD": "OPD",
+              "deptUnit": "Pulmon 1",
+              "labStudyNo": "0102015",
+              "acceptanceDate": "02-Jan-2025 16:50",
+              "collStudyDate": "02-Jan-2025 12:18",
+              "reportingDate": "03-Jan-2025 12:00",
+              "investigations": {
+                "immunoglobulinE_IgE": {
+                  "result": 238.18,
+                  "unit": "IU/ml",
+                  "refRange": "0 - 100"
+                }
+              },
+              "comments": "",
+              "enteredBy": "Biochemistry Immunology Technician",
+              "validatedBy": "Dr. Jyothi Viswan",
+              "institution": "All India Institute of Medical Sciences, Sijua, Patrapada, Bhubaneswar, Odisha, India - 751019",
+              "department": "Department of Biochemistry"
+            },
+            "conditions": ["elevated_ige"],
+            "context": []
+          };
+          
+          // Format and display summary
+          const summary = `
+            <h3 class="text-lg font-semibold mb-2">Patient Report Summary</h3>
+            <p><strong>Patient:</strong> ${hardcodedData.patientData.patientName} (${hardcodedData.patientData.ageSex})</p>
+            <p><strong>ABHA Number:</strong> ${hardcodedData.patientData.ABHA_NO}</p>
+            <p><strong>ABHA Address:</strong> ${hardcodedData.patientData.ABHA_ADDRESS}</p>
+            <p><strong>Report Date:</strong> ${hardcodedData.patientData.reportingDate}</p>
+            <p><strong>Key Finding:</strong> Elevated Immunoglobulin E (IgE) levels at ${hardcodedData.patientData.investigations.immunoglobulinE_IgE.result} ${hardcodedData.patientData.investigations.immunoglobulinE_IgE.unit}, which is above the reference range of ${hardcodedData.patientData.investigations.immunoglobulinE_IgE.refRange}.</p>
+            <p><strong>Clinical Significance:</strong> Elevated IgE levels may indicate an allergic response or other immune system disorder. This could be related to conditions such as allergic rhinitis, asthma, or atopic dermatitis.</p>
+            <p><strong>Recommendation:</strong> Follow-up with the pulmonology department for further evaluation, especially if the patient is experiencing symptoms like wheezing, coughing, or breathing difficulties.</p>
+          `;
+          
+          summaryContentEl.innerHTML = summary;
+          
+          // Set timestamp
+          resultTimestampEl.textContent = new Date().toLocaleString();
+        }, 2000); // 2 second delay to simulate processing
+      });
+      
+      // Try again button
+      tryAgainBtn.addEventListener('click', () => {
+        errorStateEl.classList.add('hidden');
+        fileDropArea.classList.remove('hidden');
+        selectedFile = null;
+        fileInput.value = '';
+        selectedFileEl.classList.add('hidden');
+        processBtn.disabled = true;
+      });
+      
+      // Helper functions
+      function showError(message) {
+        errorMessageEl.textContent = message;
+        errorStateEl.classList.remove('hidden');
+        fileDropArea.classList.add('hidden');
+      }
+      
+      function formatText(text) {
+        if (!text) return '<p>No text content found.</p>';
+        
+        // Replace newlines with paragraph breaks
+        const formattedText = text.split('\n\n')
+          .filter(para => para.trim())
+          .map(para => `<p>${para.replace(/\n/g, '<br>')}</p>`)
+          .join('');
+          
+        return formattedText;
+      }
+      
+      // Check for pre-loaded record from medical records section
+      function checkForPreloadedRecord() {
+        // Get URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const source = urlParams.get('source');
+        const recordId = urlParams.get('id');
+        
+        // Check if we're coming from the records page with a specific record
+        if (source === 'record' && recordId) {
+          // Create a dummy file for demonstration purposes
+          const dummyFileName = "medical_report.pdf";
+          const dummyBlob = new Blob(["dummy content"], { type: 'application/pdf' });
+          const dummyFile = new File([dummyBlob], dummyFileName, { type: 'application/pdf' });
+          
+          // Handle the file selection
+          handleFileSelect(dummyFile);
+          
+          // Auto-process the file after a short delay
+          setTimeout(() => {
+            if (processBtn && !processBtn.disabled) {
+              processBtn.click();
+            }
+          }, 500);
+          
+          // Clear any session storage to prevent reuse
+          sessionStorage.removeItem('ocr_record');
+        }
+      }
+      
+      // QR code generation functionality
+      if (generateQrBtn) {
+        generateQrBtn.addEventListener('click', function() {
+          // Load QR Code library if not already loaded
+          loadQRCodeLibrary().then(() => {
+            // We'll use hardcoded patient data
+            const patientData = {
+              "patientData": {
+                "ABHA_NO": "219172500007703",
+                "ABHA_ADDRESS": "sharmadiksha0201@abdm",
+                "CR_No": "0102015",
+                "patientName": "Diksha Sharma",
+                "ageSex": "21 Yr/F",
+                "sampleTypeNo": "Serum/0102015",
+                "wardOPD": "OPD",
+                "deptUnit": "Pulmon 1",
+                "labStudyNo": "0102015",
+                "acceptanceDate": "02-Jan-2025 16:50",
+                "collStudyDate": "02-Jan-2025 12:18",
+                "reportingDate": "03-Jan-2025 12:00",
+                "investigations": {
+                  "immunoglobulinE_IgE": {
+                    "result": 238.18,
+                    "unit": "IU/ml",
+                    "refRange": "0 - 100"
+                  }
+                },
+                "comments": "",
+                "enteredBy": "Biochemistry Immunology Technician",
+                "validatedBy": "Dr. Jyothi Viswan",
+                "institution": "All India Institute of Medical Sciences, Sijua, Patrapada, Bhubaneswar, Odisha, India - 751019",
+                "department": "Department of Biochemistry"
+              },
+              "conditions": ["elevated_ige"],
+              "context": []
+            };
+            
+            // Convert the data to a JSON string
+            const dataString = JSON.stringify(patientData);
+            
+            // Generate the QR code
+            QRCode.toDataURL(dataString, { width: 200 }, function(error, url) {
+              if (error) {
+                console.error('Error generating QR code:', error);
+                alert('Failed to generate QR code');
+              } else {
+                // Show the QR code container
+                qrCodeContainer.classList.remove('hidden');
+                qrCodeContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                
+                // Create a QR code image element
+                const qrCodeImage = document.createElement('img');
+                qrCodeImage.src = url;
+                qrCodeImage.alt = 'Patient QR Code';
+                qrCodeImage.style.maxWidth = '100%';
+                qrCodeImage.style.maxHeight = '200px';
+                qrCodeImage.style.margin = '0 auto';
+                qrCodeImage.style.display = 'block';
+                
+                // Replace the existing QR code element with the new image
+                qrCodeElement.innerHTML = '';
+                qrCodeElement.appendChild(qrCodeImage);
+              }
+            });
+          }).catch(err => {
+            console.error('Error loading QR code library:', err);
+            alert('Failed to load QR code library. Please try again.');
+          });
+        });
+      }
+      
+      // Close QR code
+      if (closeQrBtn) {
+        closeQrBtn.addEventListener('click', function() {
+          qrCodeContainer.classList.add('hidden');
+        });
+      }
+      
+      // Download QR Code
+      if (downloadQrBtn) {
+        downloadQrBtn.addEventListener('click', function() {
+          const qrImg = qrCodeElement.querySelector('img');
+          if (qrImg) {
+            const a = document.createElement('a');
+            a.href = qrImg.src;
+            a.download = 'patient-data-qr.png';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+          } else {
+            alert('QR code not available for download');
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html> 
